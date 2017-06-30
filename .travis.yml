@@ -4,6 +4,10 @@ node_js:
   - 6
 env:
   - NODE_ENV="test"
+before_script:
+  - npm run db:setup:user
+  - npm run db:reset
 script:
   - npm test
+  - npm run enforce
   - npm run lint
