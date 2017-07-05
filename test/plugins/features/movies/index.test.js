@@ -52,6 +52,26 @@ describe('movies integration', () => {
       });
     });
 
+    it('Gets movies for a given exact title', () => {
+      return Movies.inject({
+        url: '/movies?title_exact=Argo',
+        method: 'GET'
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(200);
+      });
+    });
+
+    it('Gets movies for a given fuzzy title', () => {
+      return Movies.inject({
+        url: '/movies?title_fuzzy=Bedazled',
+        method: 'GET'
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(200);
+      });
+    });
+
   });
 
 });
