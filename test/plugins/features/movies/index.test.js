@@ -20,4 +20,38 @@ describe('movies integration', () => {
 
   });
 
+  describe('get', () => {
+
+    it('Gets all movies', () => {
+      return Movies.inject({
+        url: '/movies',
+        method: 'GET'
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(200);
+      });
+    });
+
+    it('Gets movies for a given release year', () => {
+      return Movies.inject({
+        url: '/movies?year=2011',
+        method: 'GET'
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(200);
+      });
+    });
+
+    it('Gets movies for a given range of release years', () => {
+      return Movies.inject({
+        url: '/movies?from=2011&to=2013',
+        method: 'GET'
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(200);
+      });
+    });
+
+  });
+
 });

@@ -44,6 +44,7 @@
     "hapi": "^16.4.3",
     "hapi-bookshelf-serializer": "^2.1.0",
     "hapi-format-error": "^1.1.0",
+    "hapi-query-filter": "^1.0.1",
     "joi": "^10.6.0",
     "knex": "^0.13.0",
     "pg": "^6.4.0"
