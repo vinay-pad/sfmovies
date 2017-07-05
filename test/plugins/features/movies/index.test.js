@@ -10,7 +10,7 @@ describe('movies integration', () => {
       return Movies.inject({
         url: '/movies',
         method: 'POST',
-        payload: { title: 'Volver' }
+        payload: { title: 'Volver', release_year : '2011' }
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
@@ -39,6 +39,13 @@ describe('movies integration', () => {
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
+	expect(response.result.length).to.be.gt(0);
+	expect(response.result[0]).to.have.all.keys([
+	  'id',
+	  'title',
+	  'release_year',
+	  'object'
+	]);
       });
     });
 
@@ -49,26 +56,47 @@ describe('movies integration', () => {
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
+	expect(response.result.length).to.be.gt(0);
+	expect(response.result[0]).to.have.all.keys([
+	  'id',
+	  'title',
+	  'release_year',
+	  'object'
+	]);
       });
     });
 
     it('Gets movies for a given exact title', () => {
       return Movies.inject({
-        url: '/movies?title_exact=Argo',
+        url: '/movies?title_exact=Volver',
         method: 'GET'
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
+	expect(response.result.length).to.be.gt(0);
+	expect(response.result[0]).to.have.all.keys([
+	  'id',
+	  'title',
+	  'release_year',
+	  'object'
+	]);
       });
     });
 
     it('Gets movies for a given fuzzy title', () => {
       return Movies.inject({
-        url: '/movies?title_fuzzy=Bedazled',
+        url: '/movies?title_fuzzy=Volve',
         method: 'GET'
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
+	expect(response.result.length).to.be.gt(0);
+	expect(response.result[0]).to.have.all.keys([
+	  'id',
+	  'title',
+	  'release_year',
+	  'object'
+	]);
       });
     });
 
