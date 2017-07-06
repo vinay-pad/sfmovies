@@ -7,7 +7,7 @@ env:
 before_script:
   - npm run db:setup:user
   - npm run db:setup
-  - psql --username sfmovies_user --dbname sfmovies_test --command "CREATE EXTENSION pg_trgm;"
+  - psql --dbname sfmovies_test --command "CREATE EXTENSION pg_trgm;"
   - npm run db:reset
 script:
   - npm test
