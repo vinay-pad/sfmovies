@@ -26,26 +26,26 @@ describe('movie controller', () => {
 
   describe('list', () => {
 
-    beforeEach(() => {
-      return Knex.raw('TRUNCATE movies CASCADE;');
-    });
+    const movie_list = [
+      {
+        title: 'Argo',
+        release_year: 2011
+      },
+      {
+        title: 'Argo2',
+        release_year: 2012
+      },
+      {
+        title: 'Bedazzled',
+        release_year: 2007
+      }
+    ];
 
     beforeEach(() => {
-      const movie_list = [
-        {
-          title: 'Argo',
-          release_year: 2011
-        },
-        {
-          title: 'Argo2',
-          release_year: 2012
-        },
-        {
-          title: 'Bedazzled',
-          release_year: 2007
-        }
-      ];
-      return Knex('movies').insert(movie_list);
+      return Knex.raw('TRUNCATE movies CASCADE;')
+        .then(() => {
+          return Knex('movies').insert(movie_list);
+        });
     });
 
     it('List all movies. No filters specified', () => {
