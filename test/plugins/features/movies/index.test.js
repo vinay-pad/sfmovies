@@ -1,10 +1,15 @@
 'use strict';
 
 const Movies = require('../../../../lib/server');
+const Knex   = require('../../../../lib/libraries/knex');
 
 describe('movies integration', () => {
 
   describe('create', () => {
+
+    beforeEach(() => {
+      return Knex.raw('TRUNCATE movies CASCADE;');
+    });
 
     it('creates a movie', () => {
       return Movies.inject({
@@ -21,9 +26,9 @@ describe('movies integration', () => {
 
   });
 
-  describe('get', () => {
+  describe('list', () => {
 
-    it('Gets all movies', () => {
+    it('Lists all movies', () => {
       return Movies.inject({
         url: '/movies',
         method: 'GET'
@@ -33,14 +38,14 @@ describe('movies integration', () => {
       });
     });
 
-    it('Gets movies for a given release year', () => {
+    it('Lists movies for a given release year', () => {
       return Movies.inject({
         url: '/movies?year=2011',
         method: 'GET'
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
-        expect(response.result.length).to.be.gt(0);
+        expect(response.result.length).to.be.eq(1);
         expect(response.result[0]).to.have.all.keys([
           'id',
           'title',
@@ -50,14 +55,14 @@ describe('movies integration', () => {
       });
     });
 
-    it('Gets movies for a given range of release years', () => {
+    it('Lists movies for a given range of release years', () => {
       return Movies.inject({
         url: '/movies?from=2011&to=2013',
         method: 'GET'
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
-        expect(response.result.length).to.be.gt(0);
+        expect(response.result.length).to.be.eq(1);
         expect(response.result[0]).to.have.all.keys([
           'id',
           'title',
@@ -69,18 +74,12 @@ describe('movies integration', () => {
 
     it('Gets movies for a given exact title', () => {
       return Movies.inject({
-        url: '/movies?title_exact=Volver',
+        url: '/movies?title_exact=Volve',
         method: 'GET'
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
-        expect(response.result.length).to.be.gt(0);
-        expect(response.result[0]).to.have.all.keys([
-          'id',
-          'title',
-          'release_year',
-          'object'
-        ]);
+        expect(response.result.length).to.be.eq(0);
       });
     });
 
@@ -91,7 +90,7 @@ describe('movies integration', () => {
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
-        expect(response.result.length).to.be.gt(0);
+        expect(response.result.length).to.be.eq(1);
         expect(response.result[0]).to.have.all.keys([
           'id',
           'title',
