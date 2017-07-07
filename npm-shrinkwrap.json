@@ -1476,6 +1476,33 @@
       "resolved": "https://registry.npmjs.org/hapi-format-error/-/hapi-format-error-1.1.0.tgz",
       "integrity": "sha1-KNl/grQPGx0bYrAhXqsc3+mDu94="
     },
+    "hapi-query-filter": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/hapi-query-filter/-/hapi-query-filter-1.0.1.tgz",
+      "integrity": "sha1-Fo5hxKd/JQc52sZGX20Q3Cre2aw=",
+      "dependencies": {
+        "hoek": {
+          "version": "2.16.3",
+          "resolved": "https://registry.npmjs.org/hoek/-/hoek-2.16.3.tgz",
+          "integrity": "sha1-ILt0A9POo5jpHcRxCo/xuCdKJe0="
+        },
+        "isemail": {
+          "version": "1.2.0",
+          "resolved": "https://registry.npmjs.org/isemail/-/isemail-1.2.0.tgz",
+          "integrity": "sha1-vgPfjMPineTSxd9lASY/H6RZXpo="
+        },
+        "joi": {
+          "version": "5.1.0",
+          "resolved": "https://registry.npmjs.org/joi/-/joi-5.1.0.tgz",
+          "integrity": "sha1-FSrQfbjunGQBmX/1/SwSiWBwv1g="
+        },
+        "topo": {
+          "version": "1.1.0",
+          "resolved": "https://registry.npmjs.org/topo/-/topo-1.1.0.tgz",
+          "integrity": "sha1-6ddRYV0buH3IZdsYL6HKCl71NtU="
+        }
+      }
+    },
     "has-ansi": {
       "version": "https://registry.npmjs.org/has-ansi/-/has-ansi-2.0.0.tgz",
       "integrity": "sha1-NPUEnOHs3ysGSa8+8k5F7TVBbZE="
@@ -2046,6 +2073,11 @@
           "dev": true
         }
       }
+    },
+    "moment": {
+      "version": "2.18.1",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz",
+      "integrity": "sha1-w2GT3Tzhwu7SrbfIAtu8d6gbHA8="
     },
     "ms": {
       "version": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
