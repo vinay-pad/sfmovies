@@ -8,7 +8,7 @@ describe('movies integration', () => {
   describe('create', () => {
 
     beforeEach(() => {
-      return Knex.raw('TRUNCATE movies CASCADE;');
+      return Knex.raw('TRUNCATE movies CASCADE');
     });
 
     it('creates a movie', () => {
@@ -16,7 +16,7 @@ describe('movies integration', () => {
         url: '/movies',
         method: 'POST',
         payload: { title: 'Volver',
-		   release_year: '2011' }
+                   release_year: '2011' }
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
@@ -38,7 +38,7 @@ describe('movies integration', () => {
       });
     });
 
-    it('Lists movies for a given release year', () => {
+    it('lists movies for a given release year', () => {
       return Movies.inject({
         url: '/movies?year=2011',
         method: 'GET'
@@ -55,7 +55,7 @@ describe('movies integration', () => {
       });
     });
 
-    it('Lists movies for a given range of release years', () => {
+    it('lists movies for a given range of release years', () => {
       return Movies.inject({
         url: '/movies?from=2011&to=2013',
         method: 'GET'
@@ -72,18 +72,7 @@ describe('movies integration', () => {
       });
     });
 
-    it('Gets movies for a given exact title', () => {
-      return Movies.inject({
-        url: '/movies?title_exact=Volve',
-        method: 'GET'
-      })
-      .then((response) => {
-        expect(response.statusCode).to.eql(200);
-        expect(response.result.length).to.be.eq(0);
-      });
-    });
-
-    it('Gets movies for a given fuzzy title', () => {
+    it('lists movies for a given fuzzy title', () => {
       return Movies.inject({
         url: '/movies?title_fuzzy=Volve',
         method: 'GET'

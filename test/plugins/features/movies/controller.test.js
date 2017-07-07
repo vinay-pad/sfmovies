@@ -29,11 +29,11 @@ describe('movie controller', () => {
     const movie_list = [
       {
         title: 'Argo',
-        release_year: 2011
+        release_year: 2012
       },
       {
-        title: 'Argo2',
-        release_year: 2012
+        title: 'Guardians of the Galaxy',
+        release_year: 2014
       },
       {
         title: 'Bedazzled',
@@ -42,13 +42,13 @@ describe('movie controller', () => {
     ];
 
     beforeEach(() => {
-      return Knex.raw('TRUNCATE movies CASCADE;')
+      return Knex.raw('TRUNCATE movies CASCADE')
         .then(() => {
           return Knex('movies').insert(movie_list);
         });
     });
 
-    it('List all movies. No filters specified', () => {
+    it('lists all movies with no filters specified', () => {
       const filter = {};
       return Controller.findAll(filter)
       .then((movies) => {
@@ -56,19 +56,35 @@ describe('movie controller', () => {
       });
     });
 
-    it('List all movies, filtered by year ', () => {
-      const filter = { year: 2011 };
+    it('lists all movies filtered by year', () => {
+      const filter = { year: 2014 };
       return Controller.findAll(filter)
       .then((movies) => {
         expect(movies).to.have.length(1);
       });
     });
 
-    it('List all movies, filtered by range ', () => {
-      const filter = { from: 2011, to: 2012 };
+    it('lists all movies filtered by range', () => {
+      const filter = { from: 2007, to: 2012 };
       return Controller.findAll(filter)
       .then((movies) => {
         expect(movies).to.have.length(2);
+      });
+    });
+
+    it('lists all movies filtered by exact title', () => {
+      const filter = { title_exact: 'Guardians of the Galaxy' };
+      return Controller.findAll(filter)
+      .then((movies) => {
+        expect(movies).to.have.length(1);
+      });
+    });
+
+    it('lists all movies filtered by fuzzy title', () => {
+      const filter = { title_fuzzy: 'Bedazled' };
+      return Controller.findAll(filter)
+      .then((movies) => {
+        expect(movies).to.have.length(1);
       });
     });
 
