@@ -2,6 +2,7 @@
 
 const Movies = require('../../../../lib/server');
 const Knex   = require('../../../../lib/libraries/knex');
+const Movie  = require('../../../../lib/models/movie');
 
 describe('movies integration', () => {
 
@@ -50,6 +51,7 @@ describe('movies integration', () => {
           'id',
           'title',
           'release_year',
+          'locations',
           'object'
         ]);
       });
@@ -67,6 +69,7 @@ describe('movies integration', () => {
           'id',
           'title',
           'release_year',
+          'locations',
           'object'
         ]);
       });
@@ -84,8 +87,65 @@ describe('movies integration', () => {
           'id',
           'title',
           'release_year',
+          'locations',
           'object'
         ]);
+      });
+    });
+
+  });
+
+  describe('add', () => {
+
+    const movie_list = [
+      {
+        title: 'Argo',
+        release_year: 2012
+      },
+      {
+        title: 'Guardians of the Galaxy',
+        release_year: 2014
+      },
+      {
+        title: 'Bedazzled',
+        release_year: 2007
+      }
+    ];
+
+    const locations_list = [
+      {
+        location: 'San Francisco'
+      },
+      {
+        location: 'New York'
+      }
+    ];
+
+    beforeEach(() => {
+      return Knex.raw('TRUNCATE movies CASCADE')
+        .then(() => {
+          return Knex('movies').insert(movie_list);
+        });
+    });
+
+    beforeEach(() => {
+      return Knex.raw('TRUNCATE locations CASCADE')
+        .then(() => {
+          return Knex('locations').insert(locations_list);
+        });
+    });
+
+    it('location to movie', () => {
+      return new Movie({ title: 'Bedazzled' }).fetch()
+      .then((movie) => {
+        return Movies.inject({
+          url: `/movies/${movie.id}/locations`,
+          method: 'POST',
+          payload: { location: 'New York' }
+        });
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(200);
       });
     });
 

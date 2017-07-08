@@ -90,5 +90,63 @@ describe('movie controller', () => {
 
   });
 
+  describe('add', () => {
+
+    const movie_list = [
+      {
+        title: 'Argo',
+        release_year: 2012
+      },
+      {
+        title: 'Guardians of the Galaxy',
+        release_year: 2014
+      },
+      {
+        title: 'Bedazzled',
+        release_year: 2007
+      }
+    ];
+
+    const locations_list = [
+      {
+        location: 'San Francisco'
+      },
+      {
+        location: 'New York'
+      }
+    ];
+
+    beforeEach(() => {
+      return Knex.raw('TRUNCATE movies CASCADE')
+        .then(() => {
+          return Knex('movies').insert(movie_list);
+        });
+    });
+
+    beforeEach(() => {
+      return Knex.raw('TRUNCATE locations CASCADE')
+        .then(() => {
+          return Knex('locations').insert(locations_list);
+        });
+    });
+
+    it('location to movie', () => {
+      return new Movie({ title: 'Bedazzled' }).fetch()
+      .then((movie) => {
+        const payload = { location: 'New York' };
+        return Controller.addLocation(movie.id, payload);
+      })
+      .then((movie) => {
+        const payload = { location: 'San Francisco' };
+        return Controller.addLocation(movie.id, payload);
+      })
+      .then((movie) => {
+        expect(movie.related('locations')).to.have.length(2);
+      });
+
+    });
+
+  });
+
 });
 
