@@ -23,10 +23,10 @@ const movie_list = [
 
 const locations_list = [
   {
-    location: 'SoMa'
+    name: 'SoMa'
   },
   {
-    location: 'The Haight'
+    name: 'The Haight'
   }
 ];
 
@@ -113,7 +113,7 @@ describe('movie controller', () => {
     it('location to movie', () => {
       return Bluebird.all([
         new Movie({ title: 'Bedazzled' }).fetch(),
-        new Location({ location: 'SoMa' }).fetch()
+        new Location({ name: 'SoMa' }).fetch()
       ])
       .spread((movie, location) => {
         const payload = { id: location.id };
