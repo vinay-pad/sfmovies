@@ -10,7 +10,7 @@ describe('location model', () => {
       const location = Location.forge().serialize();
       expect(location).to.have.all.keys([
         'id',
-        'location',
+        'name',
         'object'
       ]);
     });

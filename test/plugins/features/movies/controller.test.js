@@ -1,8 +1,34 @@
 'use strict';
 
+const Bluebird   = require('bluebird');
 const Controller = require('../../../../lib/plugins/features/movies/controller');
-const Movie      = require('../../../../lib/models/movie');
 const Knex       = require('../../../../lib/libraries/knex');
+const Location   = require('../../../../lib/models/location');
+const Movie      = require('../../../../lib/models/movie');
+
+const movie_list = [
+  {
+    title: 'Argo',
+    release_year: 2012
+  },
+  {
+    title: 'Guardians of the Galaxy',
+    release_year: 2014
+  },
+  {
+    title: 'Bedazzled',
+    release_year: 2007
+  }
+];
+
+const locations_list = [
+  {
+    location: 'SoMa'
+  },
+  {
+    location: 'The Haight'
+  }
+];
 
 describe('movie controller', () => {
 
@@ -26,33 +52,11 @@ describe('movie controller', () => {
 
   describe('list', () => {
 
-    const movie_list = [
-      {
-        title: 'Argo',
-        release_year: 2012
-      },
-      {
-        title: 'Guardians of the Galaxy',
-        release_year: 2014
-      },
-      {
-        title: 'Bedazzled',
-        release_year: 2007
-      }
-    ];
-
-    beforeEach(() => {
-      return Knex.raw('TRUNCATE movies CASCADE')
-        .then(() => {
-          return Knex('movies').insert(movie_list);
-        });
-    });
-
     it('lists all movies with no filters specified', () => {
       const filter = {};
       return Controller.findAll(filter)
       .then((movies) => {
-        expect(movies).to.have.length(3);
+        expect(movies).to.have.length(4);
       });
     });
 
@@ -90,31 +94,7 @@ describe('movie controller', () => {
 
   });
 
-  describe('add', () => {
-
-    const movie_list = [
-      {
-        title: 'Argo',
-        release_year: 2012
-      },
-      {
-        title: 'Guardians of the Galaxy',
-        release_year: 2014
-      },
-      {
-        title: 'Bedazzled',
-        release_year: 2007
-      }
-    ];
-
-    const locations_list = [
-      {
-        location: 'San Francisco'
-      },
-      {
-        location: 'New York'
-      }
-    ];
+  describe('addLocation', () => {
 
     beforeEach(() => {
       return Knex.raw('TRUNCATE movies CASCADE')
@@ -125,23 +105,22 @@ describe('movie controller', () => {
 
     beforeEach(() => {
       return Knex.raw('TRUNCATE locations CASCADE')
-        .then(() => {
-          return Knex('locations').insert(locations_list);
-        });
+       .then(() => {
+         return Knex('locations').insert(locations_list);
+       });
     });
 
     it('location to movie', () => {
-      return new Movie({ title: 'Bedazzled' }).fetch()
-      .then((movie) => {
-        const payload = { location: 'New York' };
+      return Bluebird.all([
+        new Movie({ title: 'Bedazzled' }).fetch(),
+        new Location({ location: 'SoMa' }).fetch()
+      ])
+      .spread((movie, location) => {
+        const payload = { id: location.id };
         return Controller.addLocation(movie.id, payload);
       })
       .then((movie) => {
-        const payload = { location: 'San Francisco' };
-        return Controller.addLocation(movie.id, payload);
-      })
-      .then((movie) => {
-        expect(movie.related('locations')).to.have.length(2);
+        expect(movie.related('locations')).to.have.length(1);
       });
 
     });

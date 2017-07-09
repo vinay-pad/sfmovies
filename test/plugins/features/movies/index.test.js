@@ -1,8 +1,10 @@
 'use strict';
 
-const Movies = require('../../../../lib/server');
-const Knex   = require('../../../../lib/libraries/knex');
-const Movie  = require('../../../../lib/models/movie');
+const Bluebird = require('bluebird');
+const Knex     = require('../../../../lib/libraries/knex');
+const Location = require('../../../../lib/models/location');
+const Movies   = require('../../../../lib/server');
+const Movie    = require('../../../../lib/models/movie');
 
 describe('movies integration', () => {
 
@@ -95,7 +97,7 @@ describe('movies integration', () => {
 
   });
 
-  describe('add', () => {
+  describe('addLocation', () => {
 
     const movie_list = [
       {
@@ -114,10 +116,10 @@ describe('movies integration', () => {
 
     const locations_list = [
       {
-        location: 'San Francisco'
+        location: 'SoMa'
       },
       {
-        location: 'New York'
+        location: 'The Haight'
       }
     ];
 
@@ -136,12 +138,15 @@ describe('movies integration', () => {
     });
 
     it('location to movie', () => {
-      return new Movie({ title: 'Bedazzled' }).fetch()
-      .then((movie) => {
+      return Bluebird.all([
+        new Movie({ title: 'Bedazzled' }).fetch(),
+        new Location({ location: 'SoMa' }).fetch()
+      ])
+      .spread((movie, location) => {
         return Movies.inject({
           url: `/movies/${movie.id}/locations`,
           method: 'POST',
-          payload: { location: 'New York' }
+          payload: { id: location.id }
         });
       })
       .then((response) => {

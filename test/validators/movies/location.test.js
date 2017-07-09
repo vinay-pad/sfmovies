@@ -12,7 +12,7 @@ describe('location validator', () => {
       const payload = {};
       const result = Joi.validate(payload, LocationValidator);
 
-      expect(result.error.details[0].path).to.eql('location');
+      expect(result.error.details[0].path).to.eql('id');
       expect(result.error.details[0].type).to.eql('any.required');
     });
 
