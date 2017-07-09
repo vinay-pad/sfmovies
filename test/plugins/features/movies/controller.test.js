@@ -32,6 +32,20 @@ const locations_list = [
 
 describe('movie controller', () => {
 
+  beforeEach(() => {
+    return Knex.raw('TRUNCATE movies CASCADE')
+      .then(() => {
+        return Knex('movies').insert(movie_list);
+      });
+  });
+
+  beforeEach(() => {
+    return Knex.raw('TRUNCATE locations CASCADE')
+     .then(() => {
+       return Knex('locations').insert(locations_list);
+     });
+  });
+
   describe('create', () => {
 
     it('creates a movie', () => {
@@ -56,7 +70,7 @@ describe('movie controller', () => {
       const filter = {};
       return Controller.findAll(filter)
       .then((movies) => {
-        expect(movies).to.have.length(4);
+        expect(movies).to.have.length(3);
       });
     });
 
@@ -95,20 +109,6 @@ describe('movie controller', () => {
   });
 
   describe('addLocation', () => {
-
-    beforeEach(() => {
-      return Knex.raw('TRUNCATE movies CASCADE')
-        .then(() => {
-          return Knex('movies').insert(movie_list);
-        });
-    });
-
-    beforeEach(() => {
-      return Knex.raw('TRUNCATE locations CASCADE')
-       .then(() => {
-         return Knex('locations').insert(locations_list);
-       });
-    });
 
     it('location to movie', () => {
       return Bluebird.all([

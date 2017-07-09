@@ -6,7 +6,45 @@ const Location = require('../../../../lib/models/location');
 const Movies   = require('../../../../lib/server');
 const Movie    = require('../../../../lib/models/movie');
 
+const movie_list = [
+  {
+    title: 'Argo',
+    release_year: 2012
+  },
+  {
+    title: 'Guardians of the Galaxy',
+    release_year: 2014
+  },
+  {
+    title: 'Bedazzled',
+    release_year: 2007
+  }
+];
+
+const locations_list = [
+  {
+    location: 'SoMa'
+  },
+  {
+    location: 'The Haight'
+  }
+];
+
 describe('movies integration', () => {
+
+  beforeEach(() => {
+    return Knex.raw('TRUNCATE movies CASCADE')
+      .then(() => {
+        return Knex('movies').insert(movie_list);
+      });
+  });
+
+  beforeEach(() => {
+    return Knex.raw('TRUNCATE locations CASCADE')
+      .then(() => {
+        return Knex('locations').insert(locations_list);
+      });
+  });
 
   describe('create', () => {
 
@@ -43,7 +81,7 @@ describe('movies integration', () => {
 
     it('lists movies for a given release year', () => {
       return Movies.inject({
-        url: '/movies?year=2011',
+        url: '/movies?year=2007',
         method: 'GET'
       })
       .then((response) => {
@@ -79,7 +117,7 @@ describe('movies integration', () => {
 
     it('lists movies for a given fuzzy title', () => {
       return Movies.inject({
-        url: '/movies?title_fuzzy=Volve',
+        url: '/movies?title_fuzzy=Arg',
         method: 'GET'
       })
       .then((response) => {
@@ -98,44 +136,6 @@ describe('movies integration', () => {
   });
 
   describe('addLocation', () => {
-
-    const movie_list = [
-      {
-        title: 'Argo',
-        release_year: 2012
-      },
-      {
-        title: 'Guardians of the Galaxy',
-        release_year: 2014
-      },
-      {
-        title: 'Bedazzled',
-        release_year: 2007
-      }
-    ];
-
-    const locations_list = [
-      {
-        location: 'SoMa'
-      },
-      {
-        location: 'The Haight'
-      }
-    ];
-
-    beforeEach(() => {
-      return Knex.raw('TRUNCATE movies CASCADE')
-        .then(() => {
-          return Knex('movies').insert(movie_list);
-        });
-    });
-
-    beforeEach(() => {
-      return Knex.raw('TRUNCATE locations CASCADE')
-        .then(() => {
-          return Knex('locations').insert(locations_list);
-        });
-    });
 
     it('location to movie', () => {
       return Bluebird.all([
