@@ -1,6 +1,0 @@
-{
-  extends: "lob",
-  rules: {
-    "no-unused-vars": 0
-  }
-}

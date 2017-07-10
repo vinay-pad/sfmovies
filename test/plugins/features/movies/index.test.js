@@ -156,14 +156,10 @@ describe('movies integration', () => {
     });
 
     it('adds a location to a non-existent movie', () => {
-      const dummyMovId = 9999;
-      return Bluebird.all([
-        new Movie({ title: MOVIE_LIST[2] }).fetch(),
-        new Location({ name: LOCATION_LIST[0] }).fetch()
-      ])
-      .spread((movie, location) => {
+      return new Location({ name: LOCATION_LIST[0] }).fetch()
+      .then((location) => {
         return Movies.inject({
-          url: `/movies/${dummyMovId}/locations`,
+          url: `/movies/9999/locations`,
           method: 'POST',
           payload: { id: location.id }
         });
@@ -174,16 +170,12 @@ describe('movies integration', () => {
     });
 
     it('adds a non-existent location to a movie', () => {
-      const dummyLocId = 9999;
-      return Bluebird.all([
-        new Movie({ title: MOVIE_LIST[2] }).fetch(),
-        new Location({ name: LOCATION_LIST[0] }).fetch()
-      ])
-      .spread((movie, location) => {
+      return  new Movie({ title: MOVIE_LIST[2] }).fetch()
+      .then((movie) => {
         return Movies.inject({
           url: `/movies/${movie.id}/locations`,
           method: 'POST',
-          payload: { id: dummyLocId }
+          payload: { id: 9999 }
         });
       })
       .then((response) => {
