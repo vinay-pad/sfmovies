@@ -1,9 +1,50 @@
 'use strict';
 
-const Movies = require('../../../../lib/server');
-const Knex   = require('../../../../lib/libraries/knex');
+const Bluebird = require('bluebird');
+
+const Knex     = require('../../../../lib/libraries/knex');
+const Location = require('../../../../lib/models/location');
+const Movies   = require('../../../../lib/server');
+const Movie    = require('../../../../lib/models/movie');
+
+const MOVIE_LIST = [
+  {
+    title: 'Argo',
+    release_year: 2012
+  },
+  {
+    title: 'Guardians of the Galaxy',
+    release_year: 2014
+  },
+  {
+    title: 'Bedazzled',
+    release_year: 2007
+  }
+];
+
+const LOCATION_LIST = [
+  {
+    name: 'SoMa'
+  },
+  {
+    name: 'The Haight'
+  }
+];
 
 describe('movies integration', () => {
+
+  beforeEach(() => {
+    return Bluebird.all([
+      Knex.raw('TRUNCATE movies CASCADE'),
+      Knex.raw('TRUNCATE locations CASCADE')
+    ])
+    .then(() => {
+      return Bluebird.all([
+        Knex('movies').insert(MOVIE_LIST),
+        Knex('locations').insert(LOCATION_LIST)
+      ]);
+    });
+  });
 
   describe('create', () => {
 
@@ -40,7 +81,7 @@ describe('movies integration', () => {
 
     it('lists movies for a given release year', () => {
       return Movies.inject({
-        url: '/movies?year=2011',
+        url: '/movies?year=2007',
         method: 'GET'
       })
       .then((response) => {
@@ -50,6 +91,7 @@ describe('movies integration', () => {
           'id',
           'title',
           'release_year',
+          'locations',
           'object'
         ]);
       });
@@ -67,6 +109,7 @@ describe('movies integration', () => {
           'id',
           'title',
           'release_year',
+          'locations',
           'object'
         ]);
       });
@@ -74,7 +117,7 @@ describe('movies integration', () => {
 
     it('lists movies for a given fuzzy title', () => {
       return Movies.inject({
-        url: '/movies?title_fuzzy=Volve',
+        url: '/movies?title_fuzzy=Arg',
         method: 'GET'
       })
       .then((response) => {
@@ -84,8 +127,30 @@ describe('movies integration', () => {
           'id',
           'title',
           'release_year',
+          'locations',
           'object'
         ]);
+      });
+    });
+
+  });
+
+  describe('addLocation', () => {
+
+    it('location to movie', () => {
+      return Bluebird.all([
+        new Movie({ title: MOVIE_LIST[2].title }).fetch(),
+        new Location({ name: LOCATION_LIST[0].name }).fetch()
+      ])
+      .spread((movie, location) => {
+        return Movies.inject({
+          url: `/movies/${movie.id}/locations`,
+          method: 'POST',
+          payload: { id: location.id }
+        });
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(200);
       });
     });
 

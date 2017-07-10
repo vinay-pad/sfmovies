@@ -1,10 +1,17 @@
 'use strict';
 
-const Movies = require('./data/movies');
+const Locations = require('./data/locations');
+const Movies    = require('./data/movies');
 
-exports.seed = function (Knex) {
-  return Knex('movies').truncate()
+exports.seed = function (Knex, Promise) {
+  return Promise.all([
+    Knex('movies').truncate(),
+    Knex('locations').truncate()
+  ])
   .then(() => {
-    return Knex('movies').insert(Movies);
+    return Promise.all([
+      Knex('locations').insert(Locations),
+      Knex('movies').insert(Movies)
+    ]);
   });
 };
