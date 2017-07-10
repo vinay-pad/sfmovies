@@ -34,16 +34,15 @@ const LOCATION_LIST = [
 describe('movie controller', () => {
 
   beforeEach(() => {
-    return Knex.raw('TRUNCATE movies CASCADE')
+    return Bluebird.all([
+      Knex.raw('TRUNCATE movies CASCADE'),
+      Knex.raw('TRUNCATE locations CASCADE')
+    ])
     .then(() => {
-      return Knex('movies').insert(MOVIE_LIST);
-    });
-  });
-
-  beforeEach(() => {
-    return Knex.raw('TRUNCATE locations CASCADE')
-    .then(() => {
-      return Knex('locations').insert(LOCATION_LIST);
+      return Bluebird.all([
+        Knex('movies').insert(MOVIE_LIST),
+        Knex('locations').insert(LOCATION_LIST)
+      ]);
     });
   });
 
@@ -111,10 +110,10 @@ describe('movie controller', () => {
 
   describe('addLocation', () => {
 
-    it('location to movie', () => {
+    it('adds location to movie', () => {
       return Bluebird.all([
-        new Movie({ title: MOVIE_LIST[2] }).fetch(),
-        new Location({ name: LOCATION_LIST[0] }).fetch()
+        new Movie({ title: MOVIE_LIST[2].title }).fetch(),
+        new Location({ name: LOCATION_LIST[0].name }).fetch()
       ])
       .spread((movie, location) => {
         const payload = { id: location.id };
@@ -122,6 +121,32 @@ describe('movie controller', () => {
       })
       .then((movie) => {
         expect(movie.related('locations')).to.have.length(1);
+      });
+    });
+
+    it('errs when passed a non-existent movie', () => {
+      return new Location({ name: LOCATION_LIST[0].name }).fetch()
+      .then((location) => {
+        const payload = { id: location.id };
+        const dummyMovId = 9999;
+        return Controller.addLocation(dummyMovId, payload);
+      })
+      .catch((error) => error)
+      .then((error) => {
+        expect(error).to.be.instanceof(Movie.NotFoundError);
+      });
+    });
+
+    it('errs when passed a non-existent location', () => {
+      return  new Movie({ title: MOVIE_LIST[2].title }).fetch()
+      .then((movie) => {
+        const dummyLocId = 9999;
+        const payload = { id: dummyLocId };
+        return Controller.addLocation(movie.id, payload);
+      })
+      .catch((error) => error)
+      .then((error) => {
+        expect(error).to.be.instanceof(Location.NotFoundError);
       });
     });
 

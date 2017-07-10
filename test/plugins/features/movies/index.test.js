@@ -34,17 +34,16 @@ const LOCATION_LIST = [
 describe('movies integration', () => {
 
   beforeEach(() => {
-    return Knex.raw('TRUNCATE movies CASCADE')
-      .then(() => {
-        return Knex('movies').insert(MOVIE_LIST);
-      });
-  });
-
-  beforeEach(() => {
-    return Knex.raw('TRUNCATE locations CASCADE')
-      .then(() => {
-        return Knex('locations').insert(LOCATION_LIST);
-      });
+    return Bluebird.all([
+      Knex.raw('TRUNCATE movies CASCADE'),
+      Knex.raw('TRUNCATE locations CASCADE')
+    ])
+    .then(() => {
+      return Bluebird.all([
+        Knex('movies').insert(MOVIE_LIST),
+        Knex('locations').insert(LOCATION_LIST)
+      ]);
+    });
   });
 
   describe('create', () => {
@@ -140,8 +139,8 @@ describe('movies integration', () => {
 
     it('location to movie', () => {
       return Bluebird.all([
-        new Movie({ title: MOVIE_LIST[2] }).fetch(),
-        new Location({ name: LOCATION_LIST[0] }).fetch()
+        new Movie({ title: MOVIE_LIST[2].title }).fetch(),
+        new Location({ name: LOCATION_LIST[0].name }).fetch()
       ])
       .spread((movie, location) => {
         return Movies.inject({
@@ -152,34 +151,6 @@ describe('movies integration', () => {
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
-      });
-    });
-
-    it('adds a location to a non-existent movie', () => {
-      return new Location({ name: LOCATION_LIST[0] }).fetch()
-      .then((location) => {
-        return Movies.inject({
-          url: `/movies/9999/locations`,
-          method: 'POST',
-          payload: { id: location.id }
-        });
-      })
-      .then((response) => {
-        expect(response.statusCode).to.eql(404);
-      });
-    });
-
-    it('adds a non-existent location to a movie', () => {
-      return  new Movie({ title: MOVIE_LIST[2] }).fetch()
-      .then((movie) => {
-        return Movies.inject({
-          url: `/movies/${movie.id}/locations`,
-          method: 'POST',
-          payload: { id: 9999 }
-        });
-      })
-      .then((response) => {
-        expect(response.statusCode).to.eql(404);
       });
     });
 
