@@ -1,12 +1,13 @@
 'use strict';
 
 const Bluebird = require('bluebird');
+
 const Knex     = require('../../../../lib/libraries/knex');
 const Location = require('../../../../lib/models/location');
 const Movies   = require('../../../../lib/server');
 const Movie    = require('../../../../lib/models/movie');
 
-const movie_list = [
+const MOVIE_LIST = [
   {
     title: 'Argo',
     release_year: 2012
@@ -21,7 +22,7 @@ const movie_list = [
   }
 ];
 
-const locations_list = [
+const LOCATION_LIST = [
   {
     name: 'SoMa'
   },
@@ -35,14 +36,14 @@ describe('movies integration', () => {
   beforeEach(() => {
     return Knex.raw('TRUNCATE movies CASCADE')
       .then(() => {
-        return Knex('movies').insert(movie_list);
+        return Knex('movies').insert(MOVIE_LIST);
       });
   });
 
   beforeEach(() => {
     return Knex.raw('TRUNCATE locations CASCADE')
       .then(() => {
-        return Knex('locations').insert(locations_list);
+        return Knex('locations').insert(LOCATION_LIST);
       });
   });
 
@@ -139,8 +140,8 @@ describe('movies integration', () => {
 
     it('location to movie', () => {
       return Bluebird.all([
-        new Movie({ title: 'Bedazzled' }).fetch(),
-        new Location({ name: 'SoMa' }).fetch()
+        new Movie({ title: MOVIE_LIST[2] }).fetch(),
+        new Location({ name: LOCATION_LIST[0] }).fetch()
       ])
       .spread((movie, location) => {
         return Movies.inject({
@@ -151,6 +152,42 @@ describe('movies integration', () => {
       })
       .then((response) => {
         expect(response.statusCode).to.eql(200);
+      });
+    });
+
+    it('adds a location to a non-existent movie', () => {
+      const dummyMovId = 9999;
+      return Bluebird.all([
+        new Movie({ title: MOVIE_LIST[2] }).fetch(),
+        new Location({ name: LOCATION_LIST[0] }).fetch()
+      ])
+      .spread((movie, location) => {
+        return Movies.inject({
+          url: `/movies/${dummyMovId}/locations`,
+          method: 'POST',
+          payload: { id: location.id }
+        });
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(404);
+      });
+    });
+
+    it('adds a non-existent location to a movie', () => {
+      const dummyLocId = 9999;
+      return Bluebird.all([
+        new Movie({ title: MOVIE_LIST[2] }).fetch(),
+        new Location({ name: LOCATION_LIST[0] }).fetch()
+      ])
+      .spread((movie, location) => {
+        return Movies.inject({
+          url: `/movies/${movie.id}/locations`,
+          method: 'POST',
+          payload: { id: dummyLocId }
+        });
+      })
+      .then((response) => {
+        expect(response.statusCode).to.eql(404);
       });
     });
 

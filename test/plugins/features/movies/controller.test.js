@@ -1,12 +1,13 @@
 'use strict';
 
-const Bluebird   = require('bluebird');
+const Bluebird = require('bluebird');
+
 const Controller = require('../../../../lib/plugins/features/movies/controller');
 const Knex       = require('../../../../lib/libraries/knex');
 const Location   = require('../../../../lib/models/location');
 const Movie      = require('../../../../lib/models/movie');
 
-const movie_list = [
+const MOVIE_LIST = [
   {
     title: 'Argo',
     release_year: 2012
@@ -21,7 +22,7 @@ const movie_list = [
   }
 ];
 
-const locations_list = [
+const LOCATION_LIST = [
   {
     name: 'SoMa'
   },
@@ -34,16 +35,16 @@ describe('movie controller', () => {
 
   beforeEach(() => {
     return Knex.raw('TRUNCATE movies CASCADE')
-      .then(() => {
-        return Knex('movies').insert(movie_list);
-      });
+    .then(() => {
+      return Knex('movies').insert(MOVIE_LIST);
+    });
   });
 
   beforeEach(() => {
     return Knex.raw('TRUNCATE locations CASCADE')
-     .then(() => {
-       return Knex('locations').insert(locations_list);
-     });
+    .then(() => {
+      return Knex('locations').insert(LOCATION_LIST);
+    });
   });
 
   describe('create', () => {
@@ -91,7 +92,7 @@ describe('movie controller', () => {
     });
 
     it('lists all movies filtered by exact title', () => {
-      const filter = { title_exact: 'Guardians of the Galaxy' };
+      const filter = { title_exact: MOVIE_LIST[1].title };
       return Controller.findAll(filter)
       .then((movies) => {
         expect(movies).to.have.length(1);
@@ -112,8 +113,8 @@ describe('movie controller', () => {
 
     it('location to movie', () => {
       return Bluebird.all([
-        new Movie({ title: 'Bedazzled' }).fetch(),
-        new Location({ name: 'SoMa' }).fetch()
+        new Movie({ title: MOVIE_LIST[2] }).fetch(),
+        new Location({ name: LOCATION_LIST[0] }).fetch()
       ])
       .spread((movie, location) => {
         const payload = { id: location.id };
@@ -122,10 +123,8 @@ describe('movie controller', () => {
       .then((movie) => {
         expect(movie.related('locations')).to.have.length(1);
       });
-
     });
 
   });
 
 });
-

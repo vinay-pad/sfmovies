@@ -3,7 +3,7 @@
 const Locations = require('./data/locations');
 const Movies    = require('./data/movies');
 
-exports.seed = function (Knex) {
+exports.seed = function (Knex, Promise) {
   return Promise.all([
     Knex('movies').truncate(),
     Knex('locations').truncate()
@@ -15,4 +15,3 @@ exports.seed = function (Knex) {
     ]);
   });
 };
-
