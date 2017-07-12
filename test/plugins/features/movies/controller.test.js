@@ -50,15 +50,14 @@ describe('movie controller', () => {
 
     it('creates a movie', () => {
       const payload = { title: 'WALL-E' };
-
+      const movieTitle = 'WALL-E';
       return Controller.create(payload)
       .then((movie) => {
-        expect(movie.get('title')).to.eql(payload.title);
-
+        expect(movie.get('name')).to.eql(movieTitle);
         return new Movie({ id: movie.id }).fetch();
       })
       .then((movie) => {
-        expect(movie.get('title')).to.eql(payload.title);
+        expect(movie.get('name')).to.eql(movieTitle);
       });
     });
 
