@@ -9,15 +9,15 @@ const Movie    = require('../../../../lib/models/movie');
 
 const MOVIE_LIST = [
   {
-    title: 'Argo',
+    name: 'Argo',
     release_year: 2012
   },
   {
-    title: 'Guardians of the Galaxy',
+    name: 'Guardians of the Galaxy',
     release_year: 2014
   },
   {
-    title: 'Bedazzled',
+    name: 'Bedazzled',
     release_year: 2007
   }
 ];
@@ -139,7 +139,7 @@ describe('movies integration', () => {
 
     it('location to movie', () => {
       return Bluebird.all([
-        new Movie({ title: MOVIE_LIST[2].title }).fetch(),
+        new Movie({ name: MOVIE_LIST[2].name }).fetch(),
         new Location({ name: LOCATION_LIST[0].name }).fetch()
       ])
       .spread((movie, location) => {

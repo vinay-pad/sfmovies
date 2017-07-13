@@ -9,15 +9,15 @@ const Movie      = require('../../../../lib/models/movie');
 
 const MOVIE_LIST = [
   {
-    title: 'Argo',
+    name: 'Argo',
     release_year: 2012
   },
   {
-    title: 'Guardians of the Galaxy',
+    name: 'Guardians of the Galaxy',
     release_year: 2014
   },
   {
-    title: 'Bedazzled',
+    name: 'Bedazzled',
     release_year: 2007
   }
 ];
@@ -90,7 +90,7 @@ describe('movie controller', () => {
     });
 
     it('lists all movies filtered by exact title', () => {
-      const filter = { title_exact: MOVIE_LIST[1].title };
+      const filter = { title_exact: MOVIE_LIST[1].name };
       return Controller.findAll(filter)
       .then((movies) => {
         expect(movies).to.have.length(1);
@@ -111,7 +111,7 @@ describe('movie controller', () => {
 
     it('adds location to movie', () => {
       return Bluebird.all([
-        new Movie({ title: MOVIE_LIST[2].title }).fetch(),
+        new Movie({ name: MOVIE_LIST[2].name }).fetch(),
         new Location({ name: LOCATION_LIST[0].name }).fetch()
       ])
       .spread((movie, location) => {
@@ -137,7 +137,7 @@ describe('movie controller', () => {
     });
 
     it('errs when passed a non-existent location', () => {
-      return  new Movie({ title: MOVIE_LIST[2].title }).fetch()
+      return  new Movie({ name: MOVIE_LIST[2].name }).fetch()
       .then((movie) => {
         const dummyLocId = 9999;
         const payload = { id: dummyLocId };
